@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <signal.h>
+
 typedef struct sockaddr_in SOCKADDR_IN;
 typedef struct sockaddr SOCKADDR;
 
@@ -44,5 +46,13 @@ int creer_serveur(int port){
 	
 	
 	return socket_serveur;
+}
+
+void initialiser_signaux(){
+	if ( signal ( SIGPIPE , SIG_IGN ) == SIG_ERR )
+	{
+		perror ( " signal " );
+	}
+
 }
 
