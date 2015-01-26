@@ -40,24 +40,24 @@ int main(void){
 	int socket_client ;
 	while(1){
 		socket_client = accept ( socket_serveur , NULL , NULL );
+		if (socket_client == -1)
+			{
+				perror ( "accept" );
+				/* traitement d ’ erreur */
+			}		
 		int pid=fork();
 		if(pid!=0){
 			close(socket_client);
 		}else{
-			if ( socket_client == -1)
-			{
-				perror ( "accept" );
-				/* traitement d ’ erreur */
-			}	
-				afficher_message(socket_client);
-			while(1){
+			struct FILE * fichier= fdopen(socket_client,"w+");			
+			afficher_message(socket_client);
+			while(1){		
 				char buff[50];
-				int taille=read(socket_client,buff,50);
-				if(taille==0 || taille ==-1){
-					break;				
+				if(fgets(buff,50,fichier)==NULL){
+					break;
 				}
 	
-				write(socket_client , buff , taille);
+				fprintf(fichier,buff);
 			}
 			exit(0);
 		}

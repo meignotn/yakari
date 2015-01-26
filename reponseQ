@@ -1,5 +1,0 @@
-1. le 2e client est en attente car on est bloqués dans la boucle infinie
-2. co et deco instant, le serveur se ferme alors qu'on est dans la boucle infinie
-3. pas fait pour ipv6
-4. le serveur se quitte et le port est tjr utilisé / impossible de relancer le serveur
-
