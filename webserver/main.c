@@ -35,6 +35,10 @@ int main(){
 	char dance[19]="do this dance again";*/	
 	while(1){
 		socket_client = accept ( socket_serveur , NULL , NULL );
+		int pid=fork();
+		if(pid!=0){
+			close(socket_client);
+		}
 		if ( socket_client == -1)
 		{
 			perror ( "accept" );
