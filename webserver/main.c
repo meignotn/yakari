@@ -71,6 +71,7 @@ int main(void){
 						fprintf(fichier_client, "HTTP/1.1 400 BAD REQUEST\r\nConnection: close\r\nContent-Length:%d\r\n",taille  );
 					}
 				}
+
 			}
 			exit(0);
 		}
