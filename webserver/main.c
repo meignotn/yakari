@@ -58,8 +58,8 @@ int main(void){
 					break;
 				}
 					
-				fprintf(fichier,"<yakari> ");
-				fprintf(fichier,buff);
+				fprintf(socket_serveur,"<yakari> ");
+				fprintf(socket_serveur,buff);
 			}
 			exit(0);
 		}
