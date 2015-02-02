@@ -38,6 +38,7 @@ int main(void){
 	initialiser_signaux();
 	int socket_serveur =creer_serveur(8000);
 	int socket_client ;
+	
 	while(1){
 		socket_client = accept ( socket_serveur , NULL , NULL );
 		if (socket_client == -1)
@@ -49,14 +50,15 @@ int main(void){
 		if(pid!=0){
 			close(socket_client);
 		}else{
-			struct FILE * fichier= fdopen(socket_client,"w+");			
+			FILE *fichier= fdopen(socket_client,"w+");			
 			afficher_message(socket_client);
 			while(1){		
 				char buff[50];
 				if(fgets(buff,50,fichier)==NULL){
 					break;
 				}
-	
+					
+				fprintf(fichier,"<yakari> ");
 				fprintf(fichier,buff);
 			}
 			exit(0);
