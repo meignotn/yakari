@@ -73,31 +73,39 @@ void traitement_signal(int sig ){
 int requetevalide(char buff[]){
 	int i=0;
 	int nbmot=1;
-	int k=0;
+	int debut_troisieme_mot=0;
+	int debut_deuxieme_mot=0;
 	while(buff[i]!='\0' && i!=8000){
 		if(buff[i]==' '){
 			if(buff[i-1]!=' '){
 				nbmot++;
-				k=i+1;
+				if(debut_deuxieme_mot==0){
+					debut_deuxieme_mot=i+1;
+				}
+				debut_troisieme_mot=i+1;
 			}
 		}
 		i++;
 	}
+	
 	if(nbmot!=3){
-		return 0;
+		return 400;
 	}
 	if(!(buff[0]=='G' && buff[1]=='E' && buff[2]=='T')){
-		return 0;
+		return 400;
 	}
-	if(!(buff[k]=='H' && buff[k+1]=='T' && buff[k+2]=='T' && buff[k+3]=='P' && buff[k+4]=='/')){
-		return 0;
-	}if(!(buff[k+5]>='0' && buff[k+5]<='1')){
-		return 0;
-	}if(!(buff[k+6]=='.')){
-		return 0;
-	}if(!(buff[k+7]>='0' && buff[k+7]<='9')){
-		return 0;
+	if(!(buff[debut_troisieme_mot]=='H' && buff[debut_troisieme_mot+1]=='T' && buff[debut_troisieme_mot+2]=='T' && buff[debut_troisieme_mot+3]=='P' && buff[debut_troisieme_mot+4]=='/')){
+		return 400;
+	}if(!(buff[debut_troisieme_mot+5]>='0' && buff[debut_troisieme_mot+5]<='1')){
+		return 400;
+	}if(!(buff[debut_troisieme_mot+6]=='.')){
+		return 400;
+	}if(!(buff[debut_troisieme_mot+7]>='0' && buff[debut_troisieme_mot+7]<='9')){
+		return 400;
+	}if(!(buff[debut_deuxieme_mot]=='/' && buff[debut_deuxieme_mot+1]==' ')){
+		return 404;
 	}
-	return 1;
+	
+	return 200;
 }
 

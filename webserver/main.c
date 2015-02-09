@@ -38,7 +38,7 @@ int main(void){
 	initialiser_signaux();
 	int socket_serveur =creer_serveur(8000);
 	int socket_client ;
-	int valide=0;
+	int resultat=0;
 	while(1){
 		socket_client = accept ( socket_serveur , NULL , NULL );
 		if (socket_client == -1)
@@ -54,21 +54,23 @@ int main(void){
 			char buff[8000];
 			if(fgets(buff,8000,fichier_client)==NULL){
 				break;
-			}if(requetevalide(buff)){
-				valide=1;
-				printf("%s",buff);
 			}
+			printf(buff);
+			resultat=requetevalide(buff);
 			int taille = strlen(buff);
 			while(!(buff[0]=='\n' || (buff[0]=='\r' && buff[1]=='\n'))){
 				if(fgets(buff,8000,fichier_client)==NULL){
 					break;
 				}
+				printf(buff);
 				taille=taille+strlen(buff);
 			}
-			if(valide){
+			if(resultat==200){
 				afficher_message(socket_client);
 				fprintf(fichier_client, "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Length: %d\n\n200 OK\r\n",taille );
 				
+			}else if(resultat==404){
+				fprintf(fichier_client, "HTTP/1.1 404 Not found\r\nConnection: close\r\nContent-Length:%d\n\n404 Not found\r\n",taille  );
 			}else{
 				fprintf(fichier_client, "HTTP/1.1 400 BAD REQUEST\r\nConnection: close\r\nContent-Length:%d\n\n400 Bad request\r\n",taille  );
 			}
