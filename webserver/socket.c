@@ -128,7 +128,7 @@ int parse_http_request ( const char * request_line , http_request * request ){
 		buf++;
 		debut_deuxieme_mot++;
 	}
-	request->url=url;
+	request->url=rewrite_url(url);
 	
 	if(!(request_line[0]=='G' && request_line[1]=='E' && request_line[2]=='T')){
 		return 0;
@@ -164,4 +164,114 @@ void send_response ( FILE * fichier_client , int code , const char * reason_phra
 	send_status(fichier_client,code,reason_phrase);
 	fprintf(fichier_client,"Connection: close\r\nContent-Length: %d\n\r\n",(int) strlen(message_body));
 	fprintf(fichier_client,"%s",message_body);
+}
+void send_response_fd( FILE * fichier_client , int code , const char * reason_phrase ,int fd,char mime[] ){
+	send_status(fichier_client,code,reason_phrase);
+	fprintf(fichier_client,"Connection: close\r\nContent-Length: %d\n\rContent-type:%s\n\r\n",get_file_size(fd),mime);
+	//fprintf(fichier_client,"%s","truc");
+	fflush(fichier_client);
+}
+
+int check_path (const char * url){
+	if(access(url,F_OK)==-1){
+		perror("Dossier inexistant");
+		return 0;
+	}
+	if(access(url,X_OK)==-1){
+		perror("Dossier non accessible");
+		return 0;
+	}
+	struct stat statbuf;
+	stat(url,&statbuf);
+	if(!S_ISDIR(statbuf.st_mode)){
+		perror("Ceci n\'est pas un dossier");
+		return 0;
+	}
+	return 1;
+
+}
+
+int check_and_open ( const char * url , const char * document_root ){
+	char* path = malloc(strlen(url)+strlen(document_root)+1);
+	strcpy(path,document_root);
+	strcat(path,url);
+	
+	struct stat statbuf;
+	stat(path,&statbuf);
+	if(!S_ISREG(statbuf.st_mode)){
+		perror("Ceci n\'est pas un fichier regulier");
+		return -1;
+	}
+	int fd_path = open(path,O_RDONLY);
+	return fd_path;
+}
+
+char * rewrite_url ( char * url ){
+	int i=0;
+	if(strcmp(url,"/")==0){
+		return "/index.html";
+	}
+	char * res=malloc(strlen(url));
+	while(url[i]!='\0' ){
+				
+		if(url[i]=='?'){			
+			res[i]='\0';
+			break;
+		}
+		res[i]=url[i];
+		i++;
+	}
+	return res;
+}
+
+int copy(int in, int out){
+	
+	char * buff = malloc(get_file_size(in));
+	if(read(in,buff,get_file_size(in))==-1){
+		perror("Erreur de lecture du fichier");
+		return 0;
+	}
+	if(write(out,buff,get_file_size(in))==-1){
+		perror("Erreur d\'écriture dans la socket'");
+		return 0;
+	}
+	
+	
+	return 1;
+}
+
+int get_file_size(int fd){
+	struct stat statbuf;
+	fstat(fd,&statbuf);
+	return statbuf.st_size;
+}
+char * getmime(char  nom[]){
+	int k=strlen(nom);
+	int i=0;
+	
+	while(i<k && nom[i]!='.'){
+		i++;
+	}
+	if(nom[i]=='.'){
+		i++;
+	}
+	int j=0;
+	char ext[strlen(nom)-i];
+	while(i+j<=k  ){
+		ext[j]=nom[i+j];
+		j++;
+	}
+	printf("%s-%d-%d",nom,i,k);
+	printf("%s",ext);
+	fflush(stdout);
+	if(strcmp(ext,"jpg")==0){
+		return "image/jpeg";
+	}if(strcmp(ext,"jpeg")==0){
+		return "image/jpeg";
+	}if(strcmp(ext,"html")==0){
+		return "text/html";
+	}if(strcmp(ext,"htm")==0){
+		return "text/html";
+	}
+	return "text/plain";
 }

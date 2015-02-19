@@ -22,9 +22,17 @@
 			
 }*/
 
-
-int main(void){
-	const char * message_bienvenue = "Bonjour , bienvenue sur mon serveur \n****************\n*    YAKARI    *\n****************\nThe ultimate web server\nall your bases are belong to us\nCheck this amazing tribal dance\n\n     X \n____/ \\__o____ \n   /`-'\\ T      ___\n. /   ) \\   o ┗(°.°)┛\n /`--/--'\\ /\\   ( )	 \n:`-./A_,-'/> \\  / \\\n" ;  
+int main(int argc, char *argv[]){
+	int fd=0;
+	//const char * message_bienvenue = "Bonjour , bienvenue sur mon serveur \n****************\n*    YAKARI    *\n****************\nThe ultimate web server\nall your bases are belong to us\nCheck this amazing tribal dance\n\n     X \n____/ \\__o____ \n   /`-'\\ T      ___\n. /   ) \\   o ┗(°.°)┛\n /`--/--'\\ /\\   ( )	 \n:`-./A_,-'/> \\  / \\\n" ; 
+	if(argc!=2){
+		perror("Dossier non renseigné");
+		return 0;
+	}
+	const char * root=argv[1];
+	if(!check_path(root)){
+		return 0;
+	}
 	initialiser_signaux();
 	int socket_serveur =creer_serveur(8000);
 	int socket_client ;
@@ -54,12 +62,14 @@ int main(void){
 			else if(mon_http_request.method==HTTP_UNSUPPORTED){
 				send_response(fichier_client , 405 , "Method Not Allowed" , "Method Not Allowed\r\n" );
 			}
-			else if(strcmp(mon_http_request.url,"/")==0){
-				send_response ( fichier_client , 200 , "OK" , message_bienvenue );
+			else if((fd=check_and_open(mon_http_request.url,root))!=-1){
+				send_response_fd ( fichier_client , 200 , "OK" , fd,getmime(mon_http_request.url) );
+				copy(fd,socket_client);
 			}
 			else{
 				send_response ( fichier_client , 404 , "Not Found" , "Not Found\r\n" );
 			}
+			
 			exit(0);
 		}
 	}
