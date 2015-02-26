@@ -33,6 +33,7 @@ int main(int argc, char *argv[]){
 	if(!check_path(root)){
 		return 0;
 	}
+	init_stats();
 	initialiser_signaux();
 	int socket_serveur =creer_serveur(8000);
 	int socket_client ;
@@ -41,6 +42,7 @@ int main(int argc, char *argv[]){
 	
 	while(1){
 		socket_client = accept ( socket_serveur , NULL , NULL );
+		(get_stats()->served_connections)++;
 		if (socket_client == -1)
 			{
 				perror ( "accept" );
@@ -56,20 +58,29 @@ int main(int argc, char *argv[]){
 			printf(buff);
 			resultat=parse_http_request(buff,&mon_http_request);
 			skip_headers(fichier_client );
+			(get_stats()->served_requests)++;
 			if(!resultat){
 				send_response(fichier_client,400,"Bad Request","Bad request\r\n");
+				(get_stats()->ko_400)++;
+				printf("%d",get_stats()->ko_400);
+			}else if(!strcmp(mon_http_request.url,"/stats")){
+				send_stats (fichier_client);
 			}else if(check_url(mon_http_request.url)){
 				send_response(fichier_client , 403 , "Forbidden" , "Forbidden\r\n" );
+				(get_stats()->ko_403)++;
 			}
 			else if(mon_http_request.method==HTTP_UNSUPPORTED){
 				send_response(fichier_client , 405 , "Method Not Allowed" , "Method Not Allowed\r\n" );
 			}
 			else if((fd=check_and_open(mon_http_request.url,root))!=-1){
 				send_response_fd ( fichier_client , 200 , "OK" , fd,getmime(mon_http_request.url) );
+				(get_stats()->ok_200)++;
 				copy(fd,socket_client);
 			}
 			else{
 				send_response ( fichier_client , 404 , "Not Found" , "Not Found\r\n" );
+				(get_stats()->ko_404)++;
+				
 			}
 			
 			exit(0);

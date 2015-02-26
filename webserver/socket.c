@@ -1,4 +1,5 @@
 #include "socket.h"
+
 typedef struct sockaddr_in SOCKADDR_IN;
 typedef struct sockaddr SOCKADDR;
 
@@ -296,3 +297,20 @@ char * getmime(char  nom[]){
 	}
 	return "text/plain";
 }
+void send_stats ( FILE * fichier_client ){
+	send_status(fichier_client,200,"OK");
+	fprintf(fichier_client,"Connection: close\r\nContent-Length: \n\rContent-type:%s\n\r\n","text/plain");
+	fprintf(fichier_client,"Served connections : %d\n\r",get_stats()->served_connections);
+	fflush(fichier_client);
+	fprintf(fichier_client,"Served requests : %d\n\r",get_stats()->served_requests);
+	fflush(fichier_client);
+	fprintf(fichier_client,"OK 200 : %d\n\r",get_stats()->ok_200);
+	fflush(fichier_client);
+	fprintf(fichier_client,"KO 400 : %d\n\r",get_stats()->ko_400);
+	fflush(fichier_client);
+	fprintf(fichier_client,"KO 403 : %d\n\r",get_stats()->ko_403);
+	fflush(fichier_client);
+	fprintf(fichier_client,"KO 404 : %d\n\r",get_stats()->ko_404);
+	fflush(fichier_client);
+}
+

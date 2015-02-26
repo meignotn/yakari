@@ -1,6 +1,6 @@
 # ifndef __SOCKET_H__
 # define __SOCKET_H__
-#include "socket.h"
+#include "stats.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -52,4 +52,6 @@ int get_file_size(int fd) ;
 int copy(int in, int out);
 char * getmime(char * nom);
 int check_url(char * url);
+void send_stats ( FILE * client );
+
 # endif
