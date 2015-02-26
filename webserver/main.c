@@ -58,6 +58,8 @@ int main(int argc, char *argv[]){
 			skip_headers(fichier_client );
 			if(!resultat){
 				send_response(fichier_client,400,"Bad Request","Bad request\r\n");
+			}else if(check_url(mon_http_request.url)){
+				send_response(fichier_client , 403 , "Forbidden" , "Forbidden\r\n" );
 			}
 			else if(mon_http_request.method==HTTP_UNSUPPORTED){
 				send_response(fichier_client , 405 , "Method Not Allowed" , "Method Not Allowed\r\n" );

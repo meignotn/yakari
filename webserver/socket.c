@@ -193,8 +193,10 @@ int check_path (const char * url){
 
 int check_and_open ( const char * url , const char * document_root ){
 	char* path = malloc(strlen(url)+strlen(document_root)+1);
+	
 	strcpy(path,document_root);
 	strcat(path,url);
+	
 	
 	struct stat statbuf;
 	stat(path,&statbuf);
@@ -207,7 +209,7 @@ int check_and_open ( const char * url , const char * document_root ){
 }
 
 char * rewrite_url ( char * url ){
-	int i=0;
+	int unsigned i=0;
 	if(strcmp(url,"/")==0){
 		return "/index.html";
 	}
@@ -221,7 +223,26 @@ char * rewrite_url ( char * url ){
 		res[i]=url[i];
 		i++;
 	}
+	
+	
 	return res;
+}
+
+int check_url(char * url){
+	int k=0;
+	int  unsigned i=0;
+	for(i=1;i<(strlen(url));i++){
+		if(url[i]=='/' && url[i-1]!='.' && url[i-1]!='/'){
+			k++;
+		}if(url[i]=='.' && url[i-1] =='.' ){
+			k--;
+		}
+		if(k<0){
+			return 1;
+		}
+	}
+	return 0;
+	
 }
 
 int copy(int in, int out){
