@@ -25,7 +25,7 @@ all: $(EXE)
 # Cette règle permet de construire l’exécutable. Elle dépend des fichiers
 # .o et effectue l’édition de lien. Rien de nouveau ici
 $(EXE): $(OBJS)
-	$(LD) $^ $(LDFLAGS) -o $@
+	$(LD) $^ $(LDFLAGS) -o $@ -lrt
 # Cette règle permet de construire automatiquement les règles
 # de compilation pour chacun des fichiers .c
 # l’option -MM de gcc analyse un fichier .c et
@@ -37,7 +37,7 @@ $(EXE): $(OBJS)
 # Après votre première compilation, regardez le contenu du fichier
 # makefile.dep généré afin de comprendre exactement de quoi il retourne.
 makefile.dep : $(CFILES) $(HEADERS)
-	$(CC) -MM $(CFILES) > $@
+	$(CC) -MM $(CFILES) > $@ -lrt
 # Cette règle efface le fichier de dépendances et les fichiers .o
 clean :
 	$(RM) $(OBJS) makefile.dep

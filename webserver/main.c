@@ -33,25 +33,17 @@ int main(int argc, char *argv[]){
 	if(!check_path(root)){
 		return 0;
 	}
-	printf("init avant");
-	fflush(stdout);
 	init_stats();
 	initialiser_signaux();
-	printf("init apres");
-	fflush(stdout);
 	int socket_serveur =creer_serveur(8000);
 	int socket_client ;
 	int resultat=0;
 	http_request mon_http_request;
-	
-	printf("test : %i",get_stats()->served_connections);
-	while(1){
+		while(1){
 		socket_client = accept ( socket_serveur , NULL , NULL );
-		
-		printf("t avant");
-		fflush(stdout);
+		sem_wait(get_semaphore());
 		get_stats()->served_connections++;
-		printf("t apres");
+		sem_post(get_semaphore());
 		
 		if (socket_client == -1)
 			{
@@ -68,28 +60,53 @@ int main(int argc, char *argv[]){
 			printf(buff);
 			resultat=parse_http_request(buff,&mon_http_request);
 			skip_headers(fichier_client );
+			
+			sem_wait(get_semaphore());
 			(get_stats()->served_requests)++;
+			sem_post(get_semaphore());
+
 			fflush(stdout);
 			if(!resultat){
 				send_response(fichier_client,400,"Bad Request","Bad request\r\n");
+
+				sem_wait(get_semaphore());
 				(get_stats()->ko_400)++;
+				sem_post(get_semaphore());
+			
 			}else if(!strcmp(mon_http_request.url,"/stats")){
+				
+				sem_wait(get_semaphore());
+				(get_stats()->ok_200)++;
+				sem_post(get_semaphore());
+
 				send_stats (fichier_client);
 			}else if(check_url(mon_http_request.url)){
 				send_response(fichier_client , 403 , "Forbidden" , "Forbidden\r\n" );
+
+				sem_wait(get_semaphore());
 				(get_stats()->ko_403)++;
+				sem_post(get_semaphore());
+			
 			}
 			else if(mon_http_request.method==HTTP_UNSUPPORTED){
 				send_response(fichier_client , 405 , "Method Not Allowed" , "Method Not Allowed\r\n" );
 			}
 			else if((fd=check_and_open(mon_http_request.url,root))!=-1){
 				send_response_fd ( fichier_client , 200 , "OK" , fd,getmime(mon_http_request.url) );
+
+				sem_wait(get_semaphore());
 				(get_stats()->ok_200)++;
+				sem_post(get_semaphore());
+
+
 				copy(fd,socket_client);
 			}
 			else{
 				send_response ( fichier_client , 404 , "Not Found" , "Not Found\r\n" );
+
+				sem_wait(get_semaphore());
 				(get_stats()->ko_404)++;
+				sem_post(get_semaphore());
 				
 			}
 			
