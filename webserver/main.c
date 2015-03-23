@@ -26,7 +26,7 @@
 int main(void){
 	const char * message_bienvenue = "Bonjour , bienvenue sur mon serveur \n****************\n*    YAKARI    *\n****************\nThe ultimate web server\nall your bases are belong to us\nCheck this amazing tribal dance\n\n     X \n____/ \\__o____ \n   /`-'\\ T      ___\n. /   ) \\   o ┗(°.°)┛\n /`--/--'\\ /\\   ( )	 \n:`-./A_,-'/> \\  / \\\n" ;  
 	initialiser_signaux();
-	int socket_serveur =creer_serveur(8000);
+	int socket_serveur =creer_serveur(8080);
 	int socket_client ;
 	int resultat=0;
 	http_request mon_http_request;
