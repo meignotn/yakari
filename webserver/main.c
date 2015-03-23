@@ -36,7 +36,7 @@ void afficher_message(int socket_client ){
 
 int main(void){
 	initialiser_signaux();
-	int socket_serveur =creer_serveur(8000);
+	int socket_serveur =creer_serveur(8080);
 	int socket_client ;
 	
 	while(1){
