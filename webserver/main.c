@@ -39,7 +39,7 @@ int main(int argc, char *argv[]){
 	initialiser_signaux();
 	printf("init apres");
 	fflush(stdout);
-	int socket_serveur =creer_serveur(8000);
+	int socket_serveur =creer_serveur(8080);
 	int socket_client ;
 	int resultat=0;
 	http_request mon_http_request;
