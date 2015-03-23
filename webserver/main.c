@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
 	}
 	init_stats();
 	initialiser_signaux();
-	int socket_serveur =creer_serveur(8000);
+	int socket_serveur =creer_serveur(8080);
 	int socket_client ;
 	int resultat=0;
 	http_request mon_http_request;
