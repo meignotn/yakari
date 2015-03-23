@@ -28,7 +28,7 @@ int main(){
 	fflush(stdout);
 	printf("hello world");
 	initialiser_signaux();
-	int socket_serveur =creer_serveur(8000);
+	int socket_serveur =creer_serveur(8080);
 	int socket_client ;
 	/*int bool=1;
 	unsigned int i;
